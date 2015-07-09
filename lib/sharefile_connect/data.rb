@@ -1,19 +1,46 @@
 module SharefileConnect
   class Data
     include HTTParty
-    include HTTMultiParty
 
-    def root(id = 'allshared')
-      parse_get("/Items(#{id})?$expand=Children&$select=Id,Name,Children/Id,Children/Name").body
-      # parse_anwser("/Items(#{id})?$expand=Children")
+    def root(id = nil)
+      parse_get("/Items(#{id || 'allshared'})?$expand=Children&$select=Id,Name,Children/Id,Children/Name").body
     end
 
     def folder_access_info(id)
       parse_get("/Items(#{id})/Info").body
     end
 
+    def item(id)
+      get("/Items(#{id})")
+    end
+
+    # def create_folder parent_id, name, description = ''
+    #   unless folder_exists?(name, parent_id)
+    #     body = {
+    #         "Name"        => name,
+    #         "Description" => description || name
+    #     }
+    #     HTTParty.post(full("Items#{parent_id}/Folder?overwrite=false&passthrough=false"), { body: body.to_json, headers: authorization_header})
+    #   else
+    #     item(folder_in_parent(name, parent_id)['Id'])
+    #   end
+    # end
+
+    def folder_exists?(name, parent_id = nil)
+      folder_in_parent(name, parent_id).any?
+    end
+
+    def folder_in_parent(name, parent_id)
+      JSON.parse(root(parent_id))['Children'].select { |f| f['Name'] == name }
+    end
+
     def items_by_path(paths)
-      parse_get("/Items/ByPath?path=/#{paths.join('/')}/&$expand=Children&$select=Id,Name,Children/Id,Children/Name").body
+      parse_get("/Items/ByPath?path=/#{paths.join('/')}/&$expand=Children&$select=Id,Name,Children/Id,Children/Name")
+    end
+
+    def items_by_path_id(paths)
+      r = items_by_path(paths).response
+      JSON.parse(r.body)['Id'] if r.kind_of?(Net::HTTPOK)
     end
 
     def upload_file folder_id, file_path
@@ -29,10 +56,18 @@ module SharefileConnect
       # end
     end
 
+    def zones
+      get("/Zones")
+    end
+
+    def zone_id
+      JSON.parse(zones.response.body)['value'].map { |x| x['Id'] if x['ZoneType'] == 'CitrixManaged' }.compact.first
+    end
+
     private
 
     def multipart_form_post url, file_path
-      newline = "\r\n"
+      newline  = "\r\n"
       filename = File.basename(file_path)
       boundary = "----------#{Time.now.nsec}"
 
@@ -46,17 +81,16 @@ module SharefileConnect
       post_body << File.read(file_path)
       post_body << "#{newline}--#{boundary}--#{newline}"
 
-      request = Net::HTTP::Post.new(uri.request_uri)
-      request.body = post_body.join
-      request["Content-Type"] = "multipart/form-data, boundary=#{boundary}"
+      request                   = Net::HTTP::Post.new(uri.request_uri)
+      request.body              = post_body.join
+      request['Content-Type']   = "multipart/form-data, boundary=#{boundary}"
       request['Content-Length'] = request.body().length
 
-      http = Net::HTTP.new uri.host, uri.port
-      http.use_ssl = true
+      http             = Net::HTTP.new uri.host, uri.port
+      http.use_ssl     = true
       http.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
-      response = http.request request
-      return response
+      http.request request
     end
 
 
@@ -69,7 +103,11 @@ module SharefileConnect
     end
 
     def parse_get(path)
-      JSON.parse HTTParty.get(full(path), headers: authorization_header)
+      get(path)
+    end
+
+    def get(path)
+      HTTParty.get(full(path), headers: authorization_header)
     end
 
     def authorization_header

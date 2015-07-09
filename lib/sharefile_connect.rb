@@ -1,7 +1,6 @@
 require 'dotenv'
 Dotenv.load
 require 'httparty'
-require 'httmultiparty'
 require 'oauth2'
 require 'net/https'
 require 'uri'

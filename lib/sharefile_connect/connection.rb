@@ -24,8 +24,8 @@ module SharefileConnect
           "grant_type"    => "password",
           "client_id"     => ENV['SHAREFILE_KEY'],
           "client_secret" => ENV['SHAREFILE_SECRET'],
-          "username"      => ENV['USER_NAME'],
-          "password"      => ENV['USER_PASS']
+          "username"      => ENV['SHAREFILE_USER_NAME'],
+          "password"      => ENV['SHAREFILE_USER_PASS']
       },
           :headers => {
           "Content-Type" => "application/x-www-form-urlencoded"
