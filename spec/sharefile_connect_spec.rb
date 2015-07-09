@@ -75,8 +75,8 @@ describe SharefileConnect do
   #   end
   #
   #   it(:data) { expect(subject.items_by_path(paths)).to be_a_kind_of(Hash) }
-  #   it(:children) { expect(subject.items_by_path(["Correspondences with LPs", "Green"])['Id']).to eq('') }
-  #   xit(:folder_access_info) { expect(subject.folder_access_info('stfobe7ba3e7-bed0-486b-a7d9-85b77179')).to be_a_kind_of(NilClass) }
+  #   it(:children) { expect(subject.items_by_path(paths)['Id']).to eq('') }
+  #   xit(:folder_access_info) { expect(subject.folder_access_info('')).to be_a_kind_of(NilClass) }
   #
   # end
   #
@@ -95,7 +95,7 @@ describe SharefileConnect do
   #   #   VCR.eject_cassette
   #   # end
   #
-  #   it(:uploads) { expect(subject.upload_file('fo0a1e12-b2b9-4d62-9482-d149da647164', 'sharefile.rb')).to be('x') }
+  #   it(:uploads) { expect(subject.upload_file(folder_id, 'sharefile.rb')).to be('x') }
   # end
 
 end
