@@ -1,8 +1,7 @@
 # SharefileConnect
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/sharefile_connect`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+This is a simple gem to allow any service to upload files to ShareFile as one single user.
+Please refer to [ShareFile Api Documentation](https://api.sharefile.com/rest/docs/resource.aspx?name=Items) for more information.
 
 ## Installation
 
@@ -22,7 +21,27 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+To retrieve a list of all Children Items:
+```ruby
+sf = SharefileConnect::Data.new
+sf.root
+# => Returns a String that can be parsed to JSON
+```
+To retreive an Item (File or Folder) by its path:
+```ruby
+sf = SharefileConnect::Data.new
+sf.items_by_path(["Parent Folder","Folder"])
+```
+To upload a file to an specific folder:
+```ruby
+sf = SharefileConnect::Data.new
+
+# Find the id of a folder
+folder_id = sf.items_by_path_id(['Folder1', 'Subfolder'])
+file_path = '/some_file.pdf'
+sf.upload_file(folder_id, file_path)
+```
+
 
 ## Development
 
