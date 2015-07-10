@@ -1,6 +1,12 @@
 module SharefileConnect
   class Data
+    attr_accessor :config
     include HTTParty
+
+
+    def initialize(config = nil)
+      @config = config || SharefileConnect::Config.new(ENV['SHAREFILE_KEY'], ENV['SHAREFILE_SECRET'], ENV['SHAREFILE_USER_NAME'], ENV['SHAREFILE_USER_PASS'], ENV['API_ENDPOINT_DOMAIN'])
+    end
 
     def root(id = nil)
       parse_get("/Items(#{id || 'allshared'})?$expand=Children&$select=Id,Name,Children/Id,Children/Name").body
@@ -95,11 +101,11 @@ module SharefileConnect
 
 
     def connection
-      @connection ||= SharefileConnect::Connection.new.token
+      @connection ||= SharefileConnect::Connection.new(config).token
     end
 
     def full path
-      "#{BASE_URI}#{path}"
+      "https://#{config.domain}.sf-api.com/sf/v3#{path}"
     end
 
     def parse_get(path)
@@ -113,7 +119,6 @@ module SharefileConnect
     def authorization_header
       return { "Authorization" => "Bearer #{connection['access_token']}" }
     end
-
 
   end
 end

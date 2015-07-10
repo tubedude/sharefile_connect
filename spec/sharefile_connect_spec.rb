@@ -80,35 +80,35 @@ describe SharefileConnect do
   #
   # end
   #
-  describe 'upload' do
-    let(:data) { SharefileConnect::Data.new }
-    let(:paths) { ["Correspondences with LPs"] }
-    let(:folder_id) { data.items_by_path_id(paths) }
-
-    subject { data }
-
-    # before do
-    #   VCR.insert_cassette 'upload', :record => :none
-    # end
-    #
-    # after do
-    #   VCR.eject_cassette
-    # end
-
-    xit(:uploads) { expect(subject.upload_file(folder_id, 'sharefile.rb').response).to be_kind_of(Net::HTTPOK)}
-    xit(:zones_body) { expect(JSON.parse(subject.zones.response.body)).to be('') }
-    it(:root) { expect(JSON.parse(subject.root)['Children'].any?).to be_truthy }
-    it(:zones_id) { expect(subject.zone_id).to eq("zpfed2b3f5-fbbf-4ed5-9a58-f1bd888f01") }
-    it(:zones) { expect(subject.zones.response).to be_kind_of(Net::HTTPOK) }
-    it(:existant_folder) { expect(subject.items_by_path(paths).response).to be_kind_of(Net::HTTPOK) }
-    it(:folder_exists?) { expect(subject.folder_exists?("Correspondences with LPs")).to be_truthy }
-    it(:folder_exists_false) { expect(subject.folder_exists?("NONON", folder_id)).to be_falsey }
-    it(:folder_exists_true) { expect(subject.folder_exists?("Green", folder_id)).to be_truthy }
-    it(:existant_folder_id) { expect(subject.items_by_path_id(paths)).to eq('fo0a1e12-b2b9-4d62-9482-d149da647164') }
-    it(:non_existant_folder) { expect(subject.items_by_path(["Correspondences with LPs", 'NoNON']).response).to be_a_kind_of(Net::HTTPNotFound) }
-
-    # it(:create_folder) { expect(subject.create_folder('fo0a1e12-b2b9-4d62-9482-d149da647164', "New_New")).to be('')}
-  end
-
-end
+#   describe 'upload' do
+#     let(:data) { SharefileConnect::Data.new }
+#     let(:paths) { ["Correspondences with LPs"] }
+#     let(:folder_id) { data.items_by_path_id(paths) }
+#
+#     subject { data }
+#
+#     # before do
+#     #   VCR.insert_cassette 'upload', :record => :none
+#     # end
+#     #
+#     # after do
+#     #   VCR.eject_cassette
+#     # end
+#
+#     xit(:uploads) { expect(subject.upload_file(folder_id, 'sharefile.rb').response).to be_kind_of(Net::HTTPOK)}
+#     xit(:zones_body) { expect(JSON.parse(subject.zones.response.body)).to be('') }
+#     it(:root) { expect(JSON.parse(subject.root)['Children'].any?).to be_truthy }
+#     it(:zones_id) { expect(subject.zone_id).to eq("zpfed2b3f5-fbbf-4ed5-9a58-f1bd888f01") }
+#     it(:zones) { expect(subject.zones.response).to be_kind_of(Net::HTTPOK) }
+#     it(:existant_folder) { expect(subject.items_by_path(paths).response).to be_kind_of(Net::HTTPOK) }
+#     it(:folder_exists?) { expect(subject.folder_exists?("Correspondences with LPs")).to be_truthy }
+#     it(:folder_exists_false) { expect(subject.folder_exists?("NONON", folder_id)).to be_falsey }
+#     it(:folder_exists_true) { expect(subject.folder_exists?("Green", folder_id)).to be_truthy }
+#     it(:existant_folder_id) { expect(subject.items_by_path_id(paths)).to eq('fo0a1e12-b2b9-4d62-9482-d149da647164') }
+#     it(:non_existant_folder) { expect(subject.items_by_path(["Correspondences with LPs", 'NoNON']).response).to be_a_kind_of(Net::HTTPNotFound) }
+#
+#     # it(:create_folder) { expect(subject.create_folder('fo0a1e12-b2b9-4d62-9482-d149da647164', "New_New")).to be('')}
+#   end
+#
+# end
 
