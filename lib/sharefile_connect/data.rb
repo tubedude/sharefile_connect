@@ -49,17 +49,24 @@ module SharefileConnect
       JSON.parse(r.body)['Id'] if r.kind_of?(Net::HTTPOK)
     end
 
-    def upload_file folder_id, file_path
+    def upload_file_from_path(folder_id, file_path)
       path          = "/Items(#{folder_id})/Upload"
-      response      = HTTParty.get(full(path), headers: authorization_header)
+      response      = get(path)
       upload_config = JSON.parse response.body
-      multipart_form_post upload_config['ChunkUri'], file_path
+      multipart_form_post upload_config['ChunkUri'], File.read(file_path), File.basename(file_path)
       # HTTMultiParty.post(upload_config["ChunkUri"], body: { file1: File.new(file_path) } )
       # File.open(file_path) do |transfile|
       #   # HTTMultiParty.post(upload_config["ChunkUri"], query: { file1: File.read(transfile) })
       #   # HTTMultiParty.post(upload_config["ChunkUri"], query: { file1: UploadIO.new(transfile, "multipart/formdata", File.basename(file_path)) })
       #   # HTTMultiParty.post(upload_config["ChunkUri"], query: { file1: UploadIO.new(File.open(file_path), "multipart/formdata") })
       # end
+    end
+
+    def upload_file(folder_id, file, file_name)
+      path          = "/Items(#{folder_id})/Upload"
+      response      = get(path)
+      upload_config = JSON.parse response.body
+      multipart_form_post upload_config['ChunkUri'], file, file_name
     end
 
     def zones
@@ -72,9 +79,9 @@ module SharefileConnect
 
     private
 
-    def multipart_form_post url, file_path
+    def multipart_form_post(url, file, file_name)
       newline  = "\r\n"
-      filename = File.basename(file_path)
+      filename = file_name
       boundary = "----------#{Time.now.nsec}"
 
       uri = URI.parse(url)
@@ -84,7 +91,7 @@ module SharefileConnect
       post_body << "Content-Disposition: form-data; name=\"File1\"; filename=\"#{filename}\"#{newline}"
       post_body << "Content-Type: application/octet-stream#{newline}"
       post_body << "#{newline}"
-      post_body << File.read(file_path)
+      post_body << file
       post_body << "#{newline}--#{boundary}--#{newline}"
 
       request                   = Net::HTTP::Post.new(uri.request_uri)
